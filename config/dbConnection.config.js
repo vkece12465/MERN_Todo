@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 
 // Your url coming from .enf file or write a custom url port number
-const MONGO_URL = process.env || 4000;
+const MONGO_URL = process.env;
 
 const dbConnection = () => {
     mongoose.connect(MONGO_URL, {
