@@ -22,8 +22,12 @@ exports.userRegister = async (req, res) => {
         if(exitUser){
             throw new customError("User is already Registred", 400);
         }
+
+
         // Encrypting user password
         const encryptPassword = await bcrypt.hash(password, 10)
+
+
         // Create User
         const user = {
             name,
@@ -56,17 +60,19 @@ exports.signIn = async (req, res) => {
         // details collicting from the model
         const {email, password} = req.body;
 
+        // Check email fields empty
+        if(!(email && password)){
+            res.status(400).json({
+                success: false,
+                message: "email and password are required"
+            })
+        }
         // Check the DB user login with email
         const user = await User.findOne({email});
 
         // Check the invalid credentials
-        if(!(email && user.password === encryptPassword(password))){
-            res.status(400).json({
-                error: "Invalid email and password"
-            })
-        }
-
-        // Create a token for Login
+        if(user && (await bcrypt.compare(password, user.password))){
+            // Create a token for Login
         const token = jwt.sign(
             {
             _id: user._id,
@@ -78,6 +84,9 @@ exports.signIn = async (req, res) => {
         })
         user.token = token
         user.password = undefined;
+        }
+
+        
 
         // Set cookie for Log in
         res.cookie("LoginUser", token, {
