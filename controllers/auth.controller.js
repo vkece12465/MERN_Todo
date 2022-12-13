@@ -81,6 +81,7 @@ exports.signIn = async (req, res) => {
         user.token = token
         user.password = undefined;
 
+        // Set cookie for Log in
         res.cookie("LoginUser", token, {
             expires: new Date.now() + 1 * 24 * 60 * 60 * 1000,
             httpOnly: true,
@@ -94,7 +95,23 @@ exports.signIn = async (req, res) => {
     // Error Block
     } catch (err) {
         console.log(err);
-        throw new customError("Login failed", 401)
+        throw new customError("Login failed", 400)
     }
 }
 
+// Logout Feature
+exports.logOut = async (_req, res) => {
+    try {
+        // Simple Signout-  res.clearCookie(LoginUser)
+        res.cookie("token", null, {
+            expires: new Date(Date.now()),
+            httpOnly: true,
+            message: "Succefully Logged out"
+        });
+
+    } catch (err) {
+        console.log(err);
+        throw new customError("Logout failed", 400)
+    }
+    
+}
