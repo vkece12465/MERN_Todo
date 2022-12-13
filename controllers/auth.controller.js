@@ -1,6 +1,6 @@
 const User = require("../models/user.model");
 const crypto = require("crypto");
-const JWT = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const {SALT_PASSWORD, SECRET_TOKEN} = process.env
 const customError = require("../utils/customError")
 
@@ -53,3 +53,48 @@ exports.userRegister = async (req, res) => {
 }
 
 // Signin Feature
+exports.signIn = async (req, res) => {
+    try {
+        // details collicting from the model
+        const {email, password} = req.body;
+
+        // Check the DB user login with email
+        const user = await User.findOne({email});
+
+        // Check the invalid credentials
+        if(!(email && user.password === encryptPassword(password))){
+            res.status(400).json({
+                error: "Invalid email and password"
+            })
+        }
+
+        // Create a token for Login
+        const token = jwt.sign(
+            {
+            _id: user._id,
+            email,
+        },
+        SECRET_TOKEN,
+        {
+            expiresIn: "24hr"
+        })
+        user.token = token
+        user.password = undefined;
+
+        res.cookie("LoginUser", token, {
+            expires: new Date.now() + 1 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+        })
+        res.status(200).json({
+            success: true,
+            message: "Login Success"
+        })
+
+
+    // Error Block
+    } catch (err) {
+        console.log(err);
+        throw new customError("Login failed", 401)
+    }
+}
+
