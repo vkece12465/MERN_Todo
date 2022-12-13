@@ -1,14 +1,11 @@
 const User = require("../models/user.model");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt")
 const {SALT_PASSWORD, SECRET_TOKEN} = process.env
 const customError = require("../utils/customError")
 
-// Encrypting user password
-const encryptPassword = (password) => {
-    const hmac = crypto.createHmac("sha256", SALT_PASSWORD);
-    return hmac.update(password).digest("hex");
-};
+
 
 // Creating user
 exports.userRegister = async (req, res) => {
@@ -25,12 +22,13 @@ exports.userRegister = async (req, res) => {
         if(exitUser){
             throw new customError("User is already Registred", 400);
         }
-    
+        // Encrypting user password
+        const encryptPassword = await bcrypt.hash(password, 10)
         // Create User
         const user = {
             name,
-            email,
-            password: encryptPassword(password)
+            email: email.toLowerCase(),
+            password: encryptPassword
         }
         // Storing the user variables
         const createUser = await User.create(user)
