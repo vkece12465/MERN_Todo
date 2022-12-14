@@ -1,8 +1,7 @@
 const User = require("../models/user.model");
-const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt")
-const {SALT_PASSWORD, SECRET_TOKEN} = process.env
+const {SECRET_TOKEN} = process.env
 const customError = require("../utils/customError")
 
 
@@ -29,14 +28,28 @@ exports.userRegister = async (req, res) => {
 
 
         // Create User
-        const user = {
+        const user = await User.create ({
             name,
             email: email.toLowerCase(),
             password: encryptPassword
-        }
+        })
+        const token = jwt.sign(
+            {
+            _id: user._id,
+            email,
+        },
+        SECRET_TOKEN,
+        {
+            expiresIn: "24hr"
+        })
+        user.token = token
+        user.password = undefined;
+        
         // Storing the user variables
-        const createUser = await User.create(user)
+        const createUser = (user)
     
+        // Token
+        
         // User not found message
         if(!createUser){
             throw new customError("User not found", 401);
@@ -70,7 +83,7 @@ exports.signIn = async (req, res) => {
         // Check the DB user login with email
         const user = await User.findOne({email});
 
-        // Check the invalid credentials
+        // Check the valid credentials
         if(user && (await bcrypt.compare(password, user.password))){
             // Create a token for Login
         const token = jwt.sign(
@@ -86,8 +99,7 @@ exports.signIn = async (req, res) => {
         user.password = undefined;
         }
 
-        
-
+    
         // Set cookie for Log in
         res.cookie("LoginUser", token, {
             expires: new Date.now() + 1 * 24 * 60 * 60 * 1000,
