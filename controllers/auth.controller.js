@@ -4,8 +4,10 @@ const bcrypt = require("bcrypt")
 const {SECRET_TOKEN} = process.env
 const customError = require("../utils/customError")
 
-
-
+// Create and export a Home page
+exports.Home = (_req, res) => {
+    res.send("Welcome to World")
+}
 // Creating user
 exports.userRegister = async (req, res) => {
     try {
