@@ -1,28 +1,32 @@
 // Import User, Todo and Task models to configure the controllers
-const User = require("./../models/user.model");
 const Todo = require("./../models/todo.model");
 const Task = require("./../models/task.model");
-const { default: customError } = require("../utils/customError");
 
 // Create and export a Home page
 exports.Home = (_req, res) => {
-    res.send("Welcome to Tasks")
+    res.send("/", "Welcome to Tasks")
 }
 
-// Creating a todo
+// Creating a task
 exports.createTask = async (req, res) => {
     try {
     const {task} = req.body;
+    const { id } = req.params;
 
     const user = req.profile;
-    const todo = req.todo
-
-    const newTask = await Task.create({
-        task,
-        todo: todo._id,
-        _id: user.Id,
-        
-    })
+    const todo = req.title
+    if(id == null) {
+        return "";
+      }
+    if(!task){
+        res.status(401).json({
+            success: false,
+            message: "Task is required",
+          });
+    }
+    const newTask = await Todo.findById(id)
+    todo.tasks.push(String(task))
+    todo.save()
     console.log(newTask.createdAt)
 
     res.status(200).json({
@@ -40,9 +44,13 @@ exports.createTask = async (req, res) => {
 }
 
 // Get Tasks
-exports.getTask = async (_req, res) => {
+exports.getTask = async (req, res) => {
     try {
-        const task = await Task.find()
+        const {id} = req.params
+         if(id == null) {
+         console.log("null");
+        }
+        const task = await Todo.findById(id)
         console.log(task)
         res.status(200).json({
             success: true,
