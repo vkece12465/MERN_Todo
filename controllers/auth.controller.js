@@ -6,7 +6,7 @@ const customError = require("../utils/customError")
 
 // Create and export a Home page
 exports.Home = (_req, res) => {
-    res.send("Welcome to World")
+    res.send("/", "Welcome to World")
 }
 // Creating user
 exports.userRegister = async (req, res) => {
@@ -42,13 +42,13 @@ exports.userRegister = async (req, res) => {
         },
         SECRET_TOKEN,
         {
-            expiresIn: "24hr"
+            expiresIn: process.env.EXPIRY
         })
         user.token = token
         user.password = undefined;
         
         // Storing the user variables
-        const createUser = (user)
+        const createUser = user
     
         // Token
         
@@ -72,7 +72,7 @@ exports.userRegister = async (req, res) => {
 // Signin Feature
 exports.signIn = async (req, res) => {
     try {
-        // details collicting from the model
+        // details collecting from the model
         const {email, password} = req.body;
 
         // Check email fields empty
@@ -81,6 +81,7 @@ exports.signIn = async (req, res) => {
                 success: false,
                 message: "email and password are required"
             })
+            return;
         }
         // Check the DB user login with email
         const user = await User.findOne({email});
@@ -95,7 +96,7 @@ exports.signIn = async (req, res) => {
         },
         SECRET_TOKEN,
         {
-            expiresIn: "24hr"
+            expiresIn: process.env.EXPIRY
         })
         user.token = token
         user.password = undefined;
@@ -103,13 +104,14 @@ exports.signIn = async (req, res) => {
 
     
         // Set cookie for Log in
-        res.cookie("LoginUser", token, {
-            expires: new Date.now() + 1 * 24 * 60 * 60 * 1000,
+        res.cookie("token", token, {
+            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000) ,
             httpOnly: true,
+            secure: true
         })
         res.status(200).json({
             success: true,
-            message: "Login Success"
+            message: "Signin Success"
         })
 
 
