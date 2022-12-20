@@ -2,38 +2,24 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
     {
-       name: {
-        type: String,
-        trim: true,
-        required: [true, "Your Name is required!"]
-       },
-       email:{
-        type: String,
-        unique: [true, "Your email must be unique"],
-        validate: {
-            validator: function(validate){
-                return /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(validate);
-            }
+        name: {
+            type: String,
+            required: [true, "Name is required"],
+            trim: true,
         },
-        message: (props) => `${props.valus} is not a valid email address`
-       },
-       password: {
-        type: String,
-        trim: true,
-        required: [true, "Password is required!"]
-       },
-       role: {
-        type: String,
-        default: "user",
-       },
-
-       todos: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Todo"
-       }],
-       token: {
-        type: String,
-       }
+        email: {
+            type: String,
+            unique: true,
+            required: [true, "email is required"]
+        },
+        password: {
+            type: String,
+            required: [true, "password is required"],
+            minLength: [6, "password must 6 characters long"]
+        },
+        token: {
+            type: String,
+        },
     },
 
     // Time stamps for created at and updated at
@@ -43,4 +29,4 @@ const userSchema = new mongoose.Schema(
 )
 
 // Exporting User Schema
-export default mongoose.model("User", userSchema)
+module.exports = mongoose.model("User", userSchema)
