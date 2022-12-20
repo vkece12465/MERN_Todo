@@ -15,7 +15,10 @@ const auth = (req, res, next) => {
 
     // If no token
     if(!token){
-        return res.status(403).send("access denied");
+        return res.status(403).json({
+            success: false,
+            message: "Please login..."
+        })
     }
 
     // Verify token
@@ -25,10 +28,13 @@ const auth = (req, res, next) => {
         req.user = decode
 
     } catch (error) {
-        return res.status(403).send("Invalid token");
+        return res.status(403).json({
+            success: false,
+            message: "Invalid token"
+        })
 
     }
-    return next()
+    return next();
 }
 
 module.exports = auth;
