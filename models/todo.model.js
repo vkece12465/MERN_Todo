@@ -1,23 +1,23 @@
 // Creating Todo Model
 const mongoose = require("mongoose");
+const User = require("./user.model");
 
 const todoSchema = new mongoose.Schema(
     {
-        todo: {
+        title: {
             type: String,
-            trim: true,
-            required: [true, "Todo is required"]
+            required: [true, "Todo is required"],
+            trim: true
+        },
+        tasks: {
+            type:[String],
+            required: [true, "Task is required"],
+            trim: true
         },
         user: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
-        tasks: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Task",
-            }
-        ]
+            ref: User
+        }
     },
 
     // Time stamps
@@ -26,4 +26,4 @@ const todoSchema = new mongoose.Schema(
     }
 );
 
-export default mongoose.model("Todo", todoSchema);
+module.exports = mongoose.model("Todo", todoSchema);
