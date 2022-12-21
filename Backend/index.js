@@ -1,7 +1,7 @@
 // Creating a Server
 const app = require("./app");
 const dbConnection = require("./config/dbConnection.config");
-const PORT = process.env || 4000;
+const PORT = process.env.PORT || 4000;
 
 // Immediate DB Connection
 dbConnection();
