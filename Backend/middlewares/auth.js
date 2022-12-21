@@ -23,9 +23,9 @@ const auth = (req, res, next) => {
 
     // Verify token
     try {
-        const decode = jwt.verify(token, SECRET_TOKEN)
-        console.log(decode)
-        req.user = decode
+        const tokenVerify = jwt.verify(token, SECRET_TOKEN)
+        console.log(tokenVerify)
+        req.user = tokenVerify
 
     } catch (error) {
         return res.status(403).json({
