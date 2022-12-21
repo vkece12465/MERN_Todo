@@ -2,10 +2,10 @@
 import mongoose from 'mongoose';
 
 // Your url coming from .enf file or write a custom url port number
-const MONGO_URL = process.env;
+const MONGO_URI = process.env.MONGO_URI;
 
 const dbConnection = () => {
-    mongoose.connect(MONGO_URL, {
+    mongoose.connect(MONGO_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
