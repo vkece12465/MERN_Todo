@@ -2,7 +2,6 @@ const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt")
 const {SECRET_TOKEN} = process.env
-const customError = require("../utils/customError")
 
 // Create and export a Home page
 exports.Home = (_req, res) => {
@@ -15,13 +14,13 @@ exports.userRegister = async (req, res) => {
 
         // Check the empty fields
         if(!(name && email && password)){
-            throw new customError("Please fill all the fields", 400)
+            throw new error("Please fill all the fields")
         }
     
         // Check the database if user already registerd or not
         const exitUser = await User.findOne({email});
         if(exitUser){
-            throw new customError("User is already Registred", 400);
+            throw new error("User is already Registred");
         }
 
 
@@ -54,7 +53,7 @@ exports.userRegister = async (req, res) => {
         
         // User not found message
         if(!createUser){
-            throw new customError("User not found", 401);
+            throw new error("User not found");
         }
         res.status(200).json({
             success: true,
@@ -118,7 +117,10 @@ exports.signIn = async (req, res) => {
     // Error Block
     } catch (err) {
         console.log(err);
-        throw new customError("Login failed", 400)
+        res.status(400).json({
+            success: false,
+            message: "Login failed"
+        })
     }
 }
 
@@ -134,7 +136,10 @@ exports.logOut = async (_req, res) => {
 
     } catch (err) {
         console.log(err);
-        throw new customError("Logout failed", 400)
+        res.status(400).json({
+            success: false,
+            message: "Logout failed"
+        })
     }
     
 }
